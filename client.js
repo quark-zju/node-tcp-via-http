@@ -80,7 +80,7 @@ var server = net.createServer(function(conn) {
           while (true) {
             var start = buf.indexOf('[');
             var end = buf.indexOf(']');
-            if (start > 0 || end < start) {
+            if (start > 0 || (end < start && end >= 0)) {
               // something bad happens
               req.abort();
               conn.end();

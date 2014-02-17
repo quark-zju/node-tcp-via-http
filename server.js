@@ -113,7 +113,7 @@ var server = http.createServer(function(req, res) {
         while (true) {
           var start = buf.indexOf('[');
           var end = buf.indexOf(']');
-          if (start > 0) {
+          if (start > 0 || (end < start && end >= 0)) {
             // something bad happens
             conn.end();
             log('Bad packet: ' + identity);
