@@ -10,12 +10,12 @@ Just run server.js on the server and run client.js on the client:
       +--------------+
              v
       +--------------+
-      | http client  | client.js host.bob:8080/ssh
+      | http client  | client.js //bob:8080/ssh
       | & tcp server |   tcp server at :8124
       +--------------+
-             |                     host.alice
+             |                     alice
     -------- | ------------------------------------
-             v                      host.bob
+             v                      bob
       +--------------+ server.js
       | http server  |   http server at :8080
       | & tcp client |     /ssh -> localhost:22

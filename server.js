@@ -102,29 +102,18 @@ var server = http.createServer(function(req, res) {
       });
       conn.on('data', function(data) {
         if (data.length > 0) {
-          res.write('[' + data.toString('base64') + ']');
+          res.write(data.toString('base64') + ']');
           res.write('\n'); // flush
         }
       });
 
-      var buf = '';
+      var buf = '', end;
       req.on('data', function(data) {
         buf += data.toString().replace(/\n/g, '');
-        while (true) {
-          var start = buf.indexOf('[');
-          var end = buf.indexOf(']');
-          if (start > 0 || (end < start && end >= 0)) {
-            // something bad happens
-            conn.end();
-            log('Bad packet: ' + identity);
-            break;
-          } else if (start === 0 && end > start) {
-            var decoded = new Buffer(buf.slice(start + 1, end), 'base64');
-            conn.write(decoded);
-            buf = buf.slice(end + 1);
-          } else {
-            break;
-          }
+        while ((end = buf.indexOf(']')) > 0) {
+          var decoded = new Buffer(buf.slice(0, end), 'base64');
+          conn.write(decoded);
+          buf = buf.slice(end + 1);
         }
       });
 

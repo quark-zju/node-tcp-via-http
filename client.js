@@ -49,7 +49,7 @@ var log = function(message) {
 
 var server = net.createServer(function(conn) {
   var identity = conn._handle.fd;
-  var parsed = url.parse(config.url);
+  var parsed = url.parse(config.url, false, true);
   var req = http.request({
     hostname: parsed.hostname,
     port: parsed.port,
@@ -69,30 +69,18 @@ var server = net.createServer(function(conn) {
 
         conn.on('data', function(data) {
           if (data.length > 0) {
-            req.write('[' + data.toString('base64') + ']');
+            req.write(data.toString('base64') + ']');
             req.write('\n'); // flush
           }
         });
 
-        var buf = '';
+        var buf = '', end;
         res.on('data', function(data) {
           buf += data.toString().replace(/\n/g, '');
-          while (true) {
-            var start = buf.indexOf('[');
-            var end = buf.indexOf(']');
-            if (start > 0 || (end < start && end >= 0)) {
-              // something bad happens
-              req.abort();
-              conn.end();
-              log('Bad packet: ' + identity);
-              break;
-            } else if (start === 0 && end > start) {
-              var decoded = new Buffer(buf.slice(start + 1, end), 'base64');
-              conn.write(decoded);
-              buf = buf.slice(end + 1);
-            } else {
-              break;
-            }
+          while ((end = buf.indexOf(']')) > 0) {
+            var decoded = new Buffer(buf.slice(0, end), 'base64');
+            conn.write(decoded);
+            buf = buf.slice(end + 1);
           }
         });
 
