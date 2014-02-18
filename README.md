@@ -33,13 +33,14 @@ Just modify `config` object in both scripts.
 
 Work with other HTTP services
 -----------------------------
-You can use a [patched](http://yaoweibin.cn/patches/) [nginx](https://github.com/quark-zju/nginx/tree/req-no-buffer), to route requests to different backends, for example:
+You can use a [patched](http://yaoweibin.cn/patches/) [nginx](https://github.com/quark-zju/nginx/tree/req-no-buffer) to route requests to different backends, for example:
 
     server {
       # ...
       location /ssh {
         # 'proxy_request_buffering' is not supported by official nginx.
         # Check Weibin Yao's patch at http://yaoweibin.cn/patches/
+        proxy_read_timeout 3600;
         proxy_request_buffering off;
         client_body_postpone_size 0;
         proxy_buffering off;
@@ -55,8 +56,8 @@ It's recommended to set `config.bind.host` to `127.0.0.1` under this configurati
 
 Will sshd see all the connections from 127.0.0.1?
 -------------------------------------------------
-No, for ipv4. server.js will take the advantage of `127.0/8` subnet and change `localAddress` according to the first 3 numbers of the remote ipv4 address.
-For example, if the client has the address `123.45.67.8`, sshd will see `127.123.45.67`. This makes [sshguard](https://github.com/schmurfy/sshguard) continue to work to some extent.
+No for ipv4. server.js will take the advantage of `127.0/8` subnet and change `localAddress` according to the first 3 numbers of the remote ipv4 address.
+For example, if the client has the address `123.45.67.8`, sshd will see `127.123.45.67`. This makes [sshguard](https://github.com/schmurfy/sshguard) continue to work to some extent (NOTE: sshguard may have a whitelist, check `/etc/sshguard/whitelist`).
 If the request is routed through nginx, `CLIENT_IP` header can be used to specify a real IP address.
 
 
