@@ -86,13 +86,13 @@ var server = http.createServer(function(req, res) {
   }
 
   var dataHandler = function(data) {
-    if (data.length === config.handshake.client.length 
+    if (data.length === config.handshake.client.length
         && data.toString() === config.handshake.client) {
       req.removeListener('data', dataHandler);
 
       // connect to tcp service
       conn = net.connect(connConfig);
-      conn.on('end', function(e) { 
+      conn.on('end', function(e) {
         res.end();
         log('Disconnected (tcp): ' + identity);
       });
@@ -141,6 +141,15 @@ var server = http.createServer(function(req, res) {
       conn.end();
     }
     log('Disconnected (http): ' + identity);
+  });
+  req.on('error', function(e) {
+    conn.end();
+    res.end();
+    log('Error (http): ' + identity + ' (' + e.message + ')');
+  });
+  res.on('error', function(e) {
+    conn.end();
+    log('Error (http): ' + identity + ' (' + e.message + ')');
   });
 
   res.writeHead(200, {

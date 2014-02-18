@@ -108,10 +108,22 @@ var server = net.createServer(function(conn) {
       conn.end();
       log('Disconnected (http): ' + identity);
     });
+    res.on('error', function(e) {
+      conn.end();
+      log('Error (http): ' + identity + ' (' + e.message + ')');
+    });
   });
-  req.on('error', function(e) { 
+  req.on('error', function(e) {
     conn.end();
     log('Connect failed (http): ' + identity + ' (' + e.message + ')');
+  });
+  req.on('close', function(e) {
+    conn.end();
+    log('Disconnected (http): ' + identity);
+  });
+  conn.on('error', function(e) {
+    req.abort();
+    log('Error (tcp): ' + identity + ' (' + e.message + ')');
   });
   conn.on('end', function(e) {
     // disconnected by tcp client
