@@ -40,7 +40,9 @@ You can use a [patched](http://yaoweibin.cn/patches/) [nginx](https://github.com
       location /ssh {
         # 'proxy_request_buffering' is not supported by official nginx.
         # Check Weibin Yao's patch at http://yaoweibin.cn/patches/
-        proxy_read_timeout 3600;
+        send_timeout 3600s;
+        proxy_read_timeout 3600s;
+        client_body_timeout 3600s;
         proxy_request_buffering off;
         client_body_postpone_size 0;
         proxy_buffering off;
