@@ -2,7 +2,7 @@ node-tcp-via-http
 =================
 
 Simple but practical tcp-to-http-to-tcp [node.js](http://nodejs.org/) script.
-It's now easy to SSH to a firewalled server with only HTTP service available.
+It's now easy to SSH to a firewalled server with only one HTTP port available.
 Just run server.js on the server and run client.js on the client:
 
       +--------------+
@@ -25,6 +25,7 @@ Just run server.js on the server and run client.js on the client:
       |  tcp server  | sshd
       +--------------+
 
+
 Configuration
 -------------
 Just modify `config` object in both scripts.
@@ -32,7 +33,7 @@ Just modify `config` object in both scripts.
 
 Work with other HTTP services
 -----------------------------
-You can use a [patched](http://yaoweibin.cn/patches/) [nginx](https://github.com/quark-zju/nginx/tree/req-no-buffer), to map requests to different backends, for example:
+You can use a [patched](http://yaoweibin.cn/patches/) [nginx](https://github.com/quark-zju/nginx/tree/req-no-buffer), to route requests to different backends, for example:
 
     server {
       # ...
@@ -54,9 +55,9 @@ It's recommended to set `config.bind.host` to `127.0.0.1` under this configurati
 
 Will sshd see all the connections from 127.0.0.1?
 -------------------------------------------------
-No. server.js will take the advantage of `127.0/8` addresses and change localAddress according to remote ipv4 address.
+No, for ipv4. server.js will take the advantage of `127.0/8` subnet and change `localAddress` according to the first 3 numbers of the remote ipv4 address.
 For example, if the client has the address `123.45.67.8`, sshd will see `127.123.45.67`. This makes [sshguard](https://github.com/schmurfy/sshguard) continue to work to some extent.
-server.js can also use `CLIENT_IP` header.
+If the request is routed through nginx, `CLIENT_IP` header can be used to specify a real IP address.
 
 
 Related projects
