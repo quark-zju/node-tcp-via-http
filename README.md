@@ -1,7 +1,7 @@
 node-tcp-via-http
 =================
 
-Simple but practical tcp-to-http-to-tcp (node.js)[http://nodejs.org/] script.
+Simple but practical tcp-to-http-to-tcp [node.js](http://nodejs.org/) script.
 It's now easy to SSH to a firewalled server with only HTTP service available.
 Just run server.js on the server and run client.js on the client:
 
@@ -51,11 +51,13 @@ You can use a [patched](http://yaoweibin.cn/patches/) [nginx](https://github.com
 
 It's recommended to set `config.bind.host` to `127.0.0.1` under this configuration.
 
-Will sshd see all the connections are from 127.0.0.1?
------------------------------------------------------
+
+Will sshd see all the connections from 127.0.0.1?
+-------------------------------------------------
 No. server.js will take the advantage of `127.0/8` addresses and change localAddress according to remote ipv4 address.
 For example, if the client has the address `123.45.67.8`, sshd will see `127.123.45.67`. This makes [sshguard](https://github.com/schmurfy/sshguard) continue to work to some extent.
 server.js can also use `CLIENT_IP` header.
+
 
 Related projects
 ----------------
